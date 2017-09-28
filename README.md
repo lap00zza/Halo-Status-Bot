@@ -15,12 +15,12 @@ $ node bot.js
 ```
 
 ## Commands
-Commands                  | Explanation
---------------------------|------------
-`!ping`                   | PONG!!!
-`!status YOUR_STATUS_TEXT`| To manually set your status
-`!start`                  | To start tracking your Halo server
-`!stop`                   | To stop tracking your Halo server
+Command              | Explanation
+---------------------|------------
+`!ping`              | PONG!!!
+`!status SOME_STATUS`| To manually set your status
+`!start`             | To start tracking your Halo server
+`!stop`              | To stop tracking your Halo server
 
 ## License
 [MIT](https://github.com/lap00zza/Halo-Status-Bot/blob/master/LICENSE)
