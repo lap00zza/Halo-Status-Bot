@@ -83,15 +83,16 @@ const setStatus = function (client, status) {
 
 const startTracking = function (message) {
     // If purity doesn't return an error we can start polling
-    getIP()
-        .then(() => {
+    (async () => {
+        try {
+            await getIP();
             console.log(`>> started tracking...`);
             message.channel.send(":robot: now tracking...");
             pollHALO();
-        })
-        .catch(() => {
+        } catch (err) {
             message.channel.send(":robot: you need to run HALO first.")
-        });
+        }
+    })();
 };
 
 const stopTracking = function (message) {
