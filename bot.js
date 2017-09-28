@@ -23,7 +23,6 @@
 const { join } = require("path");
 const { execFile } = require("child_process");
 const Discord = require("discord.js");
-const client = new Discord.Client();
 const config = require("./config");
 
 /* --- Mutables --- */
@@ -49,25 +48,25 @@ const getIP = function () {
 };
 
 const pollHALO = function () {
-    pollTimer = setTimeout(() => {
-        getIP()
-            .then(res => {
-                if (lastRes !== res) {
-                    const [ip, port] = res.split(";", 2);
-                    if (ip === "0.0.0.0") {
-                        console.log(`>> setting status to Main Menu`);
-                        setStatus(client, `Halo @ Main Menu`);
-                    } else {
-                        console.log(`>> setting status to ${ip}:${port}`);
-                        setStatus(client, `Halo @ ${ip}:${port}`);
-                    }
-
+    pollTimer = setTimeout(async () => {
+        try {
+            const res = await getIP();
+            if (lastRes !== res) {
+                const [ip, port] = res.split(";", 2);
+                if (ip === "0.0.0.0") {
+                    console.log(`>> setting status to Main Menu`);
+                    setStatus(client, `Halo @ Main Menu`);
+                } else {
+                    console.log(`>> setting status to ${ip}:${port}`);
+                    setStatus(client, `Halo @ ${ip}:${port}`);
                 }
-                lastRes = res;
-            })
-            .catch(err => console.error(err))
-            // last then is our finally
-            .then(pollHALO());
+
+            }
+            lastRes = res;
+        } catch (err) {
+            console.error("error: Halo is not running");
+        }
+        pollHALO();
     }, config.POLLING_INTERVAL);
 };
 /* --- */
@@ -106,6 +105,8 @@ const stopTracking = function (message) {
 
 
 /* --- Connection + commands parsing --- */
+const client = new Discord.Client();
+
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
