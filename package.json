@@ -1,5 +1,5 @@
 {
-  "name": "Halo Status Bot",
+  "name": "Halo-Status-Bot",
   "version": "",
   "dependencies": {
     "discord.js": "^11.2.1",

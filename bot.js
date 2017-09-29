@@ -25,6 +25,7 @@ const { execFile } = require("child_process");
 const Discord = require("discord.js");
 const config = require("./config");
 
+
 /* --- Mutables --- */
 let pollTimer = 0;
 let lastRes = "";
@@ -60,7 +61,6 @@ const pollHALO = function () {
                     console.log(`>> setting status to ${ip}:${port}`);
                     setStatus(client, `Halo @ ${ip}:${port}`);
                 }
-
             }
             lastRes = res;
         } catch (err) {
