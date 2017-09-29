@@ -40,8 +40,8 @@ let lastRes = "";
 const getIP = function () {
     return new Promise((resolve, reject) => {
         execFile(join(__dirname, "purity.ip/purity.network.cli.exe"), (err, stdout, stderr) => {
-            if (stderr) {
-                reject(stderr);
+            if (err) {
+                reject(err);
             }
             resolve(stdout);
         });
@@ -53,10 +53,10 @@ const pollHALO = function () {
         try {
             const res = await getIP();
             if (lastRes !== res) {
-                const [ip, port] = res.split(";", 2);
+                const [ip, port] = res.split("\r\n", 2);
                 if (ip === "0.0.0.0") {
                     console.log(`>> setting status to Main Menu`);
-                    setStatus(client, `Halo @ Main Menu`);
+                    setStatus(client, "Halo @ Main Menu");
                 } else {
                     console.log(`>> setting status to ${ip}:${port}`);
                     setStatus(client, `Halo @ ${ip}:${port}`);
@@ -64,7 +64,8 @@ const pollHALO = function () {
             }
             lastRes = res;
         } catch (err) {
-            console.error("error: Halo is not running");
+            console.error("error: Halo is not running. Start Halo and run this bot again.");
+            stopTracking();
         }
         pollHALO();
     }, config.POLLING_INTERVAL);
@@ -73,59 +74,31 @@ const pollHALO = function () {
 
 
 /* --- Commands --- */
-const pong = function(message) {
-    message.channel.send(":robot: pong");
-};
-
 const setStatus = function (client, status) {
     client.user.setGame(status);
 };
 
-const startTracking = function (message) {
-    // If purity doesn't return an error we can start polling
-    (async () => {
-        try {
-            await getIP();
-            console.log(`>> started tracking...`);
-            message.channel.send(":robot: now tracking...");
-            pollHALO();
-        } catch (err) {
-            message.channel.send(":robot: you need to run HALO first.")
-        }
-    })();
+const startTracking = function () {
+    console.log(`>> started tracking...`);
+    pollHALO();
 };
 
-const stopTracking = function (message) {
+const stopTracking = function () {
     console.log(`>> stopped tracking...`);
-    message.channel.send(":robot: stopped tracking. cya!");
     clearTimeout(pollTimer);
     setStatus(client, "");
     lastRes = "";
+    process.exit(0);
 };
 /* --- */
 
 
-/* --- Connection + commands parsing --- */
+/* --- Connection --- */
 const client = new Discord.Client();
 
 client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}!`);
-});
-
-client.on("message", msg => {
-    // Self bot duh!
-    if (msg.author !== client.user) return;
-    const [cmd, ...data] = msg.content.split(" ");
-    switch (cmd) {
-        case "!ping":
-            return pong(msg);
-        case "!status":
-            return setStatus(client, data.join(" "));
-        case "!start":
-            return startTracking(msg);
-        case "!stop":
-            return stopTracking(msg);
-    }
+    startTracking();
 });
 
 client.login(config.DISCORD_TOKEN);
