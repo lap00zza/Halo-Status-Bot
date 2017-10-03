@@ -53,13 +53,13 @@ const pollHALO = function () {
         try {
             const res = await getIP();
             if (lastRes !== res) {
-                const [ip, port] = res.split("\r\n", 2);
+                const [ip, port, name] = res.split("\r\n", 3);
                 if (ip === "0.0.0.0") {
                     console.log(`>> setting status to Main Menu`);
                     setStatus(client, "Halo @ Main Menu");
                 } else {
-                    console.log(`>> setting status to ${ip}:${port}`);
-                    setStatus(client, `Halo @ ${ip}:${port}`);
+                    console.log(`>> setting status to : Halo @ ${ip}:${port} as ${name}`);
+                    setStatus(client, `Halo @ ${ip}:${port} as ${name}`);
                 }
             }
             lastRes = res;
